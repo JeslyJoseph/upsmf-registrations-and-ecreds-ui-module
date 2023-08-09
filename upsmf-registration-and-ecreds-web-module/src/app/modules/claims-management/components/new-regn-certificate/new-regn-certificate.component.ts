@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import {  FormBuilder, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { BaseServiceService } from 'src/app/services/base-service.service';
 
@@ -64,12 +64,30 @@ export class NewRegnCertificateComponent {
       origin: new FormControl('', [
         Validators.required]),
       endDate: new FormControl('', [
-        Validators.required]),
+        Validators.required,this.validateMinAge(20) as ValidatorFn]),
       degree: new FormControl('', [
         Validators.required]),
     });
 
+
   }
+  validateMinAge(minAge: number) {
+    return (control: FormControl) => {
+      const selectedDate = new Date(control.value);
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - selectedDate.getFullYear();
+
+      if (age < minAge) {
+        return { invalidMinAge: true };
+      }
+
+      return null;
+    };
+  }
+  
+
+ 
+
 
   onSubmit(value:any){
     var data = this.newRegCertformGroup.value;
@@ -94,10 +112,11 @@ export class NewRegnCertificateComponent {
     console.log(value)
     this.submitted = true;
     if( this.newRegCertformGroup.valid){
-      this.router.navigate(['claims/new-regn-cert-details']);
+      this.router.navigate(['claims/new-regn-cert-details'],{state:{body:value}});
     }
     
   }
+ 
 
   radioChecked(e: any, e1: any) {
     console.log(e)

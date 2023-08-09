@@ -48,8 +48,8 @@ export interface ClaimsTableData {
       degree:string,
   }
   export interface studentDetails {
-    // registrationType: string,
-    // council: string,
+    registrationType: string,
+    council: string,
     email: string,
     mothersName: string,
     fathersName: string,
@@ -70,5 +70,6 @@ export interface ClaimsTableData {
     entityName:string,
     entityId: string,
     name:string,
+    propertiesOSID:object;
   }
   

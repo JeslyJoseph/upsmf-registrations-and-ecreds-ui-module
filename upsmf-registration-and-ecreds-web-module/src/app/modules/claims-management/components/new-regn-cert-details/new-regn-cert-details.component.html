@@ -52,14 +52,14 @@
                                     <!-- </div> -->
 
                                     <!-- <div class="ml4 flex flex-column"> -->
-                                        <h4>Date Of Birth</h4>
+                                        <!-- <h4>Date Of Birth</h4>
                                         <mat-form-field appearance="outline">
 
                                             <mat-label>Choose a date</mat-label>
                                             <input matInput [matDatepicker]="picker" formControlName="dob">
                                             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                             <mat-datepicker #picker></mat-datepicker>
-                                        </mat-form-field>
+                                        </mat-form-field> -->
 
                                     <!-- </div> -->
 
@@ -259,7 +259,7 @@
                                         <mat-form-field appearance="outline">
 
                                             <mat-label>Choose a date</mat-label>
-                                            <input matInput [matDatepicker]="pickerjoindate" formControlName="joinDate">
+                                            <input matInput [matDatepicker]="pickerjoindate" formControlName="joinDate" (click)="onDateChange($event)">
                                             <mat-datepicker-toggle matIconSuffix [for]="pickerjoindate"></mat-datepicker-toggle>
                                             <mat-datepicker #pickerjoindate></mat-datepicker>
                                         </mat-form-field>
@@ -270,9 +270,12 @@
                                         <h4>Course Passing Date</h4>
                                         <mat-form-field appearance="outline">
                                             <mat-label>Choose a date</mat-label>
-                                            <input matInput [matDatepicker]="pickerpassingDate" formControlName="passDate">
+                                            <input matInput [matDatepicker]="pickerpassingDate" formControlName="passDate" [min]="newRegCourseDetailsformGroup.controls['joinDate'].value">
                                             <mat-datepicker-toggle matIconSuffix [for]="pickerpassingDate"></mat-datepicker-toggle>
                                             <mat-datepicker #pickerpassingDate></mat-datepicker>
+                                            <mat-error *ngIf="newRegCourseDetailsformGroup.controls['passDate'].touched && newRegCourseDetailsformGroup.controls['passDate'].errors && newRegCourseDetailsformGroup.controls['passDate'].invalid">Pass date should be greater than join date.
+                                            </mat-error>
+
                                         </mat-form-field>
 
                                     </div>

@@ -1,10 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
-import { NewRegnCertificateComponent } from '../new-regn-certificate/new-regn-certificate.component';
 import { BaseServiceService } from 'src/app/services/base-service.service';
-import {  mergeMap } from 'rxjs';
-import { SharedSnackbarMessageComponent } from 'src/app/modules/shared/shared-snackbar-message/shared-snackbar-message.component';
+import { mergeMap } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,36 +12,40 @@ import { Router } from '@angular/router';
 })
 export class NewRegnCertDetailsComponent {
   @ViewChild('attachments') attachment: any;
-  
-  links=['Candidate Details','Course Details','Payment Details']
+
+  links = ['Candidate Details', 'Course Details', 'Payment Details']
 
   newRegCertformGroup: FormGroup;
   public newRegCertDetailsformGroup: FormGroup;
   newRegCourseDetailsformGroup: FormGroup;
   submitted = false;
 
-  candidateDetails:boolean = true;
-  paymentDetails:boolean = false;
+  candidateDetails: boolean = true;
+  paymentDetails: boolean = false;
+  stateData: any;
 
-  genderTypesArray =['Male' , 'Female', 'Others']
+  genderTypesArray = ['Male', 'Female', 'Others']
 
   listOfFiles: any[] = [];
   fileList: File[] = [];
 
   listOfCourseFiles: any[] = [];
   courseFileList: File[] = [];
+  joinDate = new FormControl(new Date());
+  
+
 
   constructor(private formBuilder: FormBuilder,
-    private location: Location,private baseService: BaseServiceService,
+    private location: Location, private baseService: BaseServiceService,
     private router: Router
-      ) {
-        console.log(this.router?.getCurrentNavigation()?.extras.state)
-       }
+  ) {
+    this.stateData = this.router?.getCurrentNavigation()?.extras.state;
+  }
 
-     ngOnInit() {
-      this.initForm();
-    }
-  
+  ngOnInit() {
+    this.initForm();
+  }
+
   initForm() {
 
     this.newRegCertDetailsformGroup = this.formBuilder.group({
@@ -66,7 +68,7 @@ export class NewRegnCertDetailsComponent {
       pin: new FormControl('123', [
         Validators.required,
         Validators.pattern("^[0-9]*$")]
-        ),
+      ),
       country: new FormControl('sdfgh', [
         Validators.required]),
       adhr: new FormControl('3456', [
@@ -79,149 +81,155 @@ export class NewRegnCertDetailsComponent {
       mobNumber: new FormControl('8989786756', [
         Validators.required,
         Validators.pattern("^(0|91)?[6-9][0-9]{9}$")]),
-      });
+    });
 
-      this.newRegCourseDetailsformGroup = this.formBuilder.group({
-        courseName: new FormControl('', [
-          Validators.required]),
-          collegeName: new FormControl('', [
-          Validators.required]),
-          examBody: new FormControl('', [
-          Validators.required]),
-          joinDate: new FormControl('', [
-          Validators.required]),
-          rollNum: new FormControl('', [
-          Validators.required,
-          Validators.pattern("^[0-9]*$")]),
-          passDate: new FormControl('', [
-          Validators.required])
-        });
+    this.newRegCourseDetailsformGroup = this.formBuilder.group({
+      courseName: new FormControl('', [
+        Validators.required]),
+      collegeName: new FormControl('', [
+        Validators.required]),
+      examBody: new FormControl('', [
+        Validators.required]),
+      joinDate: new FormControl('', [
+        Validators.required]),
+      rollNum: new FormControl('', [
+        Validators.required,
+        Validators.pattern("^[0-9]*$")]),
+      passDate: new FormControl('', [
+        Validators.required])
     }
+    , { validators: this.dateComparisonValidator() }
+    );
+  }
 
-    newRegCertDetailsformGroupSubmit(value: any) {
-      console.log(value)
-      this.submitted = true;
-      if (this.newRegCertDetailsformGroup.valid) {
-        this.candidateDetails = false;
-      }
-      
-    }
-    onSubmit(value:any){
-      var applicant_details = this?.newRegCertDetailsformGroup?.value;
-      var course_details = this?.newRegCourseDetailsformGroup?.value;
-      var data = this?.newRegCertformGroup?.value;
-      console.log("first form",data)
-      console.log(applicant_details)
-      // console.log(data)
-     
-      var updateStudent ={
-        
-        // council:data.councilName,
-        email: applicant_details.email,
-        mothersName: applicant_details.motherName,
-        fathersName: applicant_details.fatherName,
-        dateOfBirth: applicant_details.dateOfBirth,
-        // date: string,
-        aadhaarNo: applicant_details.aadhaarNo,
-        gender: applicant_details.gender,
-        courseName: course_details.courseName,
-        nursingCollage: course_details.collegeName,
-        joiningMonth: course_details.joinDate,
-        // joiningYear: string,
-        passingMonth: course_details.passDate,
-        // passingYear: number,
-        finalYearRollNo: course_details.rollNo,
-        // examBody: string
-
-      }
-      this.baseService.updateStudent$(updateStudent).pipe(
-        mergeMap((response)=>{
-          console.log("first",response)
-          var claimBody={
-            entityId:response.id,
-            entityName:course_details.courseName,
-            name: applicant_details.applicantName
-
-          }
-          
-          return this.baseService.createClaim$(claimBody);
-        })
-        ).subscribe(
-            (response)=>{
-              console.log("second",response)
-              
-            }
-          );
-
-          }
-          
-        
-        
-      // this.baseService.updateStudent$(updateStudent).subscribe(
-      //   (response) => {
-      //           console.log('Response:', response.id)
-
-      //         },
-      //         (error) => {
-      //           console.error('Error:', error);
-      //         }
-      //       );
-    //   var claim ={
-    //     entityName:this,
-    // entityId: string,
-    // name:string,
-    //   }
-    //   forkJoin([this.baseService.updateStudent$(updateStudent), this.baseService.createClaim$(claim)]).subscribe(
-    //     ([response1, response2]) => {
-    //       console.log('Response:', response1);
-    //       console.log('Response:', response);
-    //     },
-    //     (error) => {
-    //       console.error('Error:', error);
-    //     }
-    //   );
-    // }
-
-    onFileChanged(event?: any){
-      console.log(event);
-      for (let i = 0; i <= event.target.files.length - 1; i++) {
-        let selectedFile = event.target.files[i];
-     
-        if (this.listOfFiles.indexOf(selectedFile.name) === -1) {
-          this.fileList.push(selectedFile);
-          this.listOfFiles.push(selectedFile.name.concat(this.formatBytes(selectedFile.size)));
-        }
-      }
-    }
-   
-
-
-    onCourseFileChanged(event?: any){
-      console.log(event);
-      for (let i = 0; i <= event.target.files.length - 1; i++) {
-        let selectedFile = event.target.files[i];
-     
-        if (this.listOfCourseFiles.indexOf(selectedFile.name) === -1) {
-          this.courseFileList.push(selectedFile);
-          this.listOfCourseFiles.push(selectedFile.name.concat(this.formatBytes(selectedFile.size)));
-        }
-      }
-    }
   
-    removeSelectedFile(index: any) {
-      // Delete the item from fileNames list
-      this.listOfFiles.splice(index, 1);
-      // delete file from FileList
-      this.fileList.splice(index, 1);
-    }
+ 
+
+  dateComparisonValidator(){
+    console.log("valition")
+    return (control: AbstractControl): ValidationErrors | null => {
+      // console.log(control.get('joinDate')?.value)
+      const joinDate = control.get('joinDate')?.value;
+      const passDate = control.get('passDate')?.value;
   
-    formatBytes(bytes: any, decimals = 2) {
-      if (!+bytes) return '0 Bytes'
-      const k = 1024
-      const dm = decimals < 0 ? 0 : decimals
-      const sizes = ['Bytes', 'KB', 'MB']
-      const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+      if (joinDate && passDate && joinDate > passDate) {
+        return { dateComparison: true };
+      }
+  
+      return null;
+    };
+    
+  }
+  
+
+  newRegCertDetailsformGroupSubmit(value: any) {
+    console.log(value)
+    this.submitted = true;
+    if (this.newRegCertDetailsformGroup.valid) {
+      this.candidateDetails = false;
+    }
+
+  }
+  onSubmit(value: any) {
+    var applicant_details = this?.newRegCertDetailsformGroup?.value;
+    var course_details = this?.newRegCourseDetailsformGroup?.value;
+    var data = this.stateData;
+    console.log("first form", this.stateData)
+    console.log(applicant_details)
+    // console.log(data)
+
+    var updateStudent = {
+      registrationType: data.body.degree,
+      council: data.body.councilName,
+      email: applicant_details.email,
+      mothersName: applicant_details.motherName,
+      fathersName: applicant_details.fatherName,
+      dateOfBirth: applicant_details.dateOfBirth,
+      // date: string,
+      aadhaarNo: applicant_details.aadhaarNo,
+      gender: applicant_details.gender,
+      courseName: data.body.claimType,
+      nursingCollage: course_details.collegeName,
+      joiningMonth: course_details.joinDate,
+      // joiningYear: course_details.joinDate,
+      passingMonth: course_details.passDate,
+      // passingYear: course_details.pass,
+      finalYearRollNo: course_details.rollNo,
+      // examBody: string
+
+    }
+    this.baseService.updateStudent$(updateStudent).pipe(
+      mergeMap((response) => {
+        console.log("first", response)
+        var claimBody = {
+          entityId: response.id,
+          entityName: course_details.courseName,
+          name: applicant_details.applicantName,
+          propertiesOSID: {
+            studentUPVerification: [response.id
+
+            ]
+          }
+
+        }
+        console.log(claimBody)
+
+        return this.baseService.createClaim$(claimBody);
+      })
+    ).subscribe(
+      (response) => {
+        console.log("second", response)
+
+      }
+    );
+
+  }
+
+
+
+
+ 
+
+  onFileChanged(event?: any) {
+    console.log(event);
+    for (let i = 0; i <= event.target.files.length - 1; i++) {
+      let selectedFile = event.target.files[i];
+
+      if (this.listOfFiles.indexOf(selectedFile.name) === -1) {
+        this.fileList.push(selectedFile);
+        this.listOfFiles.push(selectedFile.name.concat(this.formatBytes(selectedFile.size)));
+      }
+    }
+  }
+
+
+
+  onCourseFileChanged(event?: any) {
+    console.log(event);
+    for (let i = 0; i <= event.target.files.length - 1; i++) {
+      let selectedFile = event.target.files[i];
+
+      if (this.listOfCourseFiles.indexOf(selectedFile.name) === -1) {
+        this.courseFileList.push(selectedFile);
+        this.listOfCourseFiles.push(selectedFile.name.concat(this.formatBytes(selectedFile.size)));
+      }
+    }
+  }
+
+  removeSelectedFile(index: any) {
+    // Delete the item from fileNames list
+    this.listOfFiles.splice(index, 1);
+    // delete file from FileList
+    this.fileList.splice(index, 1);
+  }
+
+  formatBytes(bytes: any, decimals = 2) {
+    if (!+bytes) return '0 Bytes'
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KB', 'MB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
   }
 
   removeSelectedCourseFile(index: any) {
@@ -231,20 +239,20 @@ export class NewRegnCertDetailsComponent {
     this.courseFileList.splice(index, 1);
   }
 
-  showInfo(option : any){
+  showInfo(option: any) {
     console.log(option)
     switch (option) {
       case 'Payment Details':
-        this.paymentDetails = !this.paymentDetails 
+        this.paymentDetails = !this.paymentDetails
         break;
-        case 'Candidate Details': 
-          this.candidateDetails = true;
-          this.paymentDetails = false;
-          break;
-        case 'Course Details':
-          this.candidateDetails = false;
-          this.paymentDetails = false;
-          break;
+      case 'Candidate Details':
+        this.candidateDetails = true;
+        this.paymentDetails = false;
+        break;
+      case 'Course Details':
+        this.candidateDetails = false;
+        this.paymentDetails = false;
+        break;
       default:
 
         return '';
@@ -259,7 +267,7 @@ export class NewRegnCertDetailsComponent {
     this.listOfFiles = [];
   }
 
-  navToPreviousPage(){
+  navToPreviousPage() {
     console.log("hhh")
     this.location.back()
   }
