@@ -15,7 +15,8 @@ import { MaterialModule } from 'src/app/material/material.module';
     CommonModule,
     SuperAdminRoutingModule,
     SharedModule,
-    MaterialModule
+    MaterialModule,
+    
   ]
 })
 export class SuperAdminModule { }

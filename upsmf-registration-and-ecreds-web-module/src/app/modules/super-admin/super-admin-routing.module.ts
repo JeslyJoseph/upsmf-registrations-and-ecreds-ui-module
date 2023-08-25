@@ -6,6 +6,7 @@ const routes: Routes = [
   {
     path: 'dashboard', component: DashboardComponent, pathMatch: 'full',
   },
+  
 ];
 
 @NgModule({

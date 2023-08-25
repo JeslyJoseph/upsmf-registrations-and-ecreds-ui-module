@@ -8,6 +8,7 @@ import { ClaimDashBoardData, DashBoardData, TableColumn } from 'src/app/interfac
 })
 export class DashboardComponent {
   isDataLoading: boolean = false;
+  
 
   adminTableColumns: TableColumn[] = [];
   adminData: DashBoardData[] = [];
