@@ -15,7 +15,14 @@ const routes: Routes = [
   },
     {
     path: 'users', loadChildren: () => import('./modules/user-management/user-management.module').then(m => m.UserManagementModule)
-  }
+  },
+  // {
+  //   path: 'admin', loadChildren: () => import('./modules/admin-management/admin-management.module').then(m => m.AdminManagementModule)
+  // },
+  {
+    path: 'super-admin', loadChildren: () => import('./modules/super-admin-management/super-admin-management.module').then(m => m.SuperAdminManagementModule)
+  },
+
 ];
 
 @NgModule({
