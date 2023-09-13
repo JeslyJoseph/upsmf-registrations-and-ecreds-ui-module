@@ -388,7 +388,8 @@ export class AdminRegnCertificateDetailsComponent {
               joinDate: response.responseData.joiningYear + "-" + jm + "-01",
               rollNum: response.responseData.finalYearRollNo,
               passDate: response.responseData.passingYear + "-" + pm + "-01",
-              requestType: response.responseData.requestType
+              requestType: response.responseData.requestType,
+              university:response.responseData.university
             });
 
             console.log(this.newRegCourseDetailsformGroup.value.joinDate)
@@ -491,7 +492,8 @@ export class AdminRegnCertificateDetailsComponent {
                 joinDate: this.candidateDetailList[0]?.joiningYear + "-" + month + "-01",
                 rollNum: this.candidateDetailList[0]?.finalYearRollNo,
                 passDate: this.candidateDetailList[0]?.passingYear + "-" + month + "-01",
-                requestType: this.candidateDetailList[0]?.requestType
+                requestType: this.candidateDetailList[0]?.requestType,
+                university:this.candidateDetailList[0]?.university
               });
 
             }
@@ -793,7 +795,7 @@ export class AdminRegnCertificateDetailsComponent {
   }
 
   takeAcceptRejectAction(entity: string) {
-    if (entity === "StudentFromUP") {
+    if (this.entity === "StudentFromUP") {
       const message = `Reason For Rejection`;
       // const resDialog = new DialogModel( message);
       const shouldShowFileUpload = false;

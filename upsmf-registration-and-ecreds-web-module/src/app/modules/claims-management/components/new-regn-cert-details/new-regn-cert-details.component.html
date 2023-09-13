@@ -128,7 +128,7 @@
                                         <div class="place-details">
                                             <!-- <div class=" flex flex-column mr2"> -->
                                                 <div class="address-details">
-                                                    <h4>{{labels.addr1}}</h4>
+                                                    <h4>{{labels.al1}}</h4>
                                                     <mat-form-field appearance="outline" >
                                                         <input matInput placeholder="Address Line 1" formControlName="al1">
                                                         <mat-error *ngIf="newRegCertDetailsformGroup.controls['al1'].invalid">
@@ -459,9 +459,9 @@
                                             </div>
                                             
                             
-                                            <div class="button-group"  >
-                                                <!-- <button type="button" class="button" mat-stroked-button color="primary" (click)="onReset()"> {{ ((this.userEmail==="Regulator") && this.entity==="StudentFromUP" ) ? 'Reject' :'Cancel' }}{{ ((this.userEmail==="Regulator") && this.entity==="StudentFromUP" ) ? 'Download Letter to EC' :'Cancel' }}<mat-icon>{{ this.userEmail==="Regulator" ? 'close' : '' }}</mat-icon></button> -->
-                                                <button type="button" class="button" mat-stroked-button color="primary" (click)="onReset(entity)">
+                                            <div class="button-group" >
+                                                <button type="button" class="button" mat-stroked-button color="primary" (click)="onReset()"> Cancel</button>
+                                                <!-- <button type="button" class="button" mat-stroked-button color="primary" (click)="onReset(entity)">
                                                     <ng-container [ngSwitch]="userEmail">
                                                         <ng-container *ngSwitchCase="'Regulator'">
                                                             <ng-container [ngSwitch]="entity">
@@ -482,9 +482,9 @@
                                                         <mat-icon></mat-icon>
                                                       </ng-container>
                                                     </ng-container>
-                                                  </button>
-                                                <!-- <button  class="button" mat-raised-button color="primary" >{{ (this.userEmail==="Regulator" && this.entity==="StudentFromUP") ? 'Approve' :'Next' }}{{ (this.userEmail==="Regulator" && this.entity==="StudentOutsideUP") ? 'Sent Email to EC' :'Next' }}<mat-icon>{{  this.userEmail==="Regulator" ? 'check' : '' }}</mat-icon><mat-icon >{{ !(this.entity==="StudentFromUP" || this.entity==="StudentOutsideUP")? 'arrow_right_alt' :''}}</mat-icon></button> -->
-                                                <button class="button" mat-raised-button color="primary">
+                                                  </button> -->
+                                                <button  class="button" mat-raised-button color="primary" >Next<mat-icon >arrow_right_alt</mat-icon></button>
+                                                <!-- <button class="button" mat-raised-button color="primary">
                                                     <ng-container [ngSwitch]="userEmail">
                                                         <ng-container *ngSwitchCase="'Regulator'">
                                                             <ng-container [ngSwitch]="entity">
@@ -506,7 +506,7 @@
                                                             <mat-icon *ngIf="!(entity === 'StudentFromUP' || entity === 'StudentOutsideUP')">arrow_right_alt</mat-icon>
                                                          </ng-container>
                                                     </ng-container>
-                                                </button>
+                                                </button> -->
                                                   
                                                   
                                                   
@@ -531,7 +531,7 @@
                             <div class="full-details">
                                 <div class="cer-name">
                                     <p>Certificate Name</p>
-                                    <h4>Registraion Cert</h4>
+                                    <h4>Registraion Certificate</h4>
                                 </div>
                                 <mat-divider></mat-divider>
                                     
@@ -540,7 +540,7 @@
                                     <div class="user-info">
                                         <div class="details">
                                             <p>Applicant's Name</p>
-                                            <h4>Dev</h4>
+                                            <h4>{{this.candidateDetailList[0]?.name}}</h4>
                                         </div> 
                                         
                                         
@@ -556,6 +556,10 @@
                                             <p>Payment Amount</p>
                                             <h4>Rs 1000</h4>
                                         </div>
+                                        <div class="details">
+                                            <p>Payment Status</p>
+                                            <h4 [ngClass]="getPaymentStatusColorClass(this.candidateDetailList[0]?.paymentStatus)">{{this.candidateDetailList[0]?.paymentStatus}}</h4>
+                                        </div>
                                     <!-- </div> -->
                                     </div>
                             </div>
@@ -565,10 +569,13 @@
                                 </div>
                                 
                 
-                                <div class="button-group">
-                                    <button class="button"  mat-stroked-button color="primary">Cancel</button> 
+                                <div class="button-group" *ngIf="this.candidateDetailList[0]?.paymentStatus !=='SUCCESS' || this.stateData.status==='APPROVED'">
+                                    <button class="button"  mat-stroked-button color="primary" *ngIf="!this.stateData.status==='APPROVED'">Cancel</button> 
                        
-                                    <button  class="button" mat-raised-button color="primary" (click)="handlePayment()"><mat-icon matSuffix>arrow_right_alt</mat-icon>Make Payment</button>
+                                    <button  class="button" mat-raised-button color="primary" (click)="handlePayment()" ><mat-icon matSuffix>arrow_right_alt</mat-icon>{{ this.stateData.status==="APPROVED" ? 'Download Credentials' : 'Make Payment'}}</button>
+                                </div>
+                                <div class="button-group" *ngIf="this.candidateDetailList[0]?.paymentStatus==='SUCCESS' && this.stateData.status!=='APPROVED'">
+                                    <button  class="button" mat-raised-button  color="primary" (click)="navToPreviousPage()">Back to list</button>
                                 </div>
                             </div>
 

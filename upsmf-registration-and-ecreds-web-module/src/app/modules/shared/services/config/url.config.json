@@ -30,7 +30,8 @@
             "GET_STUDENT_DETAILS_REGULATOR":"api/v1/StudentFromUP/",
             "GET_ALL_CLAIMS_ADMIN": "api/v1/Regulator/claims",
             "GRANT_CLAIM":"api/v1/Regulator/claims/",
-            "SENTMAIL_OUTSIDEUP":"api/v1/Regulator/sendEcPendingItemMail"
+            "SENTMAIL_OUTSIDEUP":"api/v1/Regulator/sendEcPendingItemMail",
+            "GET_ADMIN_DETAILS":"api/v1/Regulator/"
         },
         "USER": {
             "CREATE_COUNCIL_USER": "api/v1/CouncilAdmin/invite",
@@ -43,6 +44,9 @@
             "GET_USERDETAILS_BY_ID": "/api/v1/user/details",
             "GET_ALL_USERS": "/api/v1/user/list",
             "GET_EMAIL_DETAILS":"/api/v1/user/emaildetails"
+        },
+        "SUPERADMIN":{
+            "GET_SUPERADMIN_DETAILS":"api/v1/SuperAdmin/"
         }
     }
 }

@@ -50,6 +50,7 @@ export class AuthService extends HttpService{
   }
 
   saveUserData(userData: any):void {
+    console.log(userData?.accessToken)
     this.saveToken(userData?.accessToken);
     localStorage.setItem(this.USER_DATA,JSON.stringify(userData));
   }
@@ -65,6 +66,7 @@ export class AuthService extends HttpService{
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_DATA);
+    localStorage.removeItem('payData');
     // localStorage.removeItem(this.ALL_ROLES);
   }
 

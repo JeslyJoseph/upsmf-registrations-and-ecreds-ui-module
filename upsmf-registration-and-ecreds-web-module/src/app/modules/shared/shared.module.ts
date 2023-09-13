@@ -12,6 +12,7 @@ import { DialogBoxComponent } from './components/dialog-box/dialog-box.component
 import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { AdminRegnCertificateDetailsComponent } from './components/admin-regn-certificate-details/admin-regn-certificate-details.component';
 import { AdminGoodStandingForeignVerificationComponent } from './components/admin-good-standing-foreign-verification/admin-good-standing-foreign-verification.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 @NgModule({
   declarations: [
     SharedTableComponent,
@@ -22,6 +23,7 @@ import { AdminGoodStandingForeignVerificationComponent } from './components/admi
     ConfirmationPopupComponent,
     AdminRegnCertificateDetailsComponent,
     AdminGoodStandingForeignVerificationComponent,
+    UserProfileComponent,
    
   ],
   imports: [

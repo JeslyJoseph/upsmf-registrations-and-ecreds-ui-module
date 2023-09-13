@@ -308,20 +308,16 @@
                                 </div>
 
 
-                                <div class="button-group"
-                                    *ngIf="this.candidateDetailList[0]?.paymentStatus!=='SUCCESS'">
-                                    <button class="button" mat-stroked-button color="primary">Cancel</button>
+                                <div class="button-group" *ngIf="this.candidateDetailList[0]?.paymentStatus!=='SUCCESS' || this.stateData.body.status==='APPROVED'">
+                                    <button class="button" mat-stroked-button color="primary"*ngIf="!this.stateData.body.status==='APPROVED'">Cancel</button>
                                     <button class="button" mat-raised-button color="primary"
-                                        (click)="handlePayment()">{{this.stateData.status==='APPROVED' ? 'Download
-                                        Credentials':'Make Payment'}}<mat-icon
-                                            matSuffix>arrow_right_alt</mat-icon></button>
+                                        (click)="handlePayment()">{{this.stateData.body.status==='APPROVED' ? 'Download
+                                        Credentials':'Make Payment'}}<mat-icon matSuffix>arrow_right_alt</mat-icon></button>
                                 </div>
-                                <div class="button-group"
-                                    *ngIf="this.candidateDetailList[0]?.paymentStatus==='SUCCESS'">
-                                    <button class="button" mat-raised-button color="primary"
-                                        (click)="navToPreviousPage()">Back to list</button>
+                                <div class="button-group" *ngIf="this.candidateDetailList[0]?.paymentStatus==='SUCCESS' && this.stateData.body.status!=='APPROVED'">
+                                    <button class="button" mat-raised-button color="primary" (click)="navToPreviousPage()">Back to list</button>
                                 </div>
-                            </div>
+                                </div>
                         </div>
                     </div>
 

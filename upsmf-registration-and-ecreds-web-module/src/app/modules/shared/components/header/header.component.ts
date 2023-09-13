@@ -14,7 +14,7 @@ export class HeaderComponent {
   }
 
   navigateToProfilePage(){
-   
+   this.router.navigate(['/user-profile'])
   }
 
   logout(){

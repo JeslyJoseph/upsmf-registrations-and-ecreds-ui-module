@@ -16,6 +16,8 @@ import jspdf, { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { applabels } from 'src/app/messages/labels';
 import { allStateList } from 'src/models/statemodel';
+import { saveAs } from 'file-saver';
+
 
 
 @Component({
@@ -661,7 +663,7 @@ export class GoodStandingForeignVerificationComponent {
 
     }
 
-    else if ((this.stateData.body.type === 'goodStandingCert' && this.candidateDetailList[0]?.paymentStatus !== 'SUCCESS')) {
+    else if ((this.stateData.body.type === 'goodStandingCert' && !this.stateData.status)) {
       this.urlList = this.updatedUrlList ? this.updatedUrlList : [...this.docsUrl, ...this.urlData]
       //convert to string with commaa separated
       this.convertUrlList = this.urlList.join(',')
@@ -870,15 +872,27 @@ export class GoodStandingForeignVerificationComponent {
     return;
   }
   handlePayment() {
-    if (this.stateData.status === 'APPROVED') {
-      this.entity = this.stateData.entity;
-      this.entityId = this.stateData.entityId;
-      this.attestationName = this.stateData.attestationName;
-      this.attestationId = this.stateData.attestationId
-      this.baseService.getCredentials$(this.entity, this.entityId, this.attestationName, this.attestationId)
-        .subscribe((response: any) => {
-          console.log("response", response)
-        })
+    if (this.stateData.body.status === 'APPROVED') {
+      this.entity = this.stateData.body.entity;
+      this.entityId = this.stateData.body.entityId;
+      this.attestationName = this.stateData.body.attestationName;
+      this.attestationId = this.stateData.body.attestationId
+      this.baseService.getCredentials$(this.entity,this.entityId,this.attestationName,this.attestationId)
+      .subscribe((response: any)=>{
+        console.log(response)
+        var blob = new Blob([response], { type: 'application/pdf' });
+                  saveAs(blob, 'report.pdf');
+          //     },
+          //     e => { throwError(e); }
+          // );
+        // this.blob = new Blob([response], {type: 'application/pdf'});
+
+        // var downloadURL = window.URL.createObjectURL(response);
+        // var link = document.createElement('a');
+        // link.href = downloadURL;
+        // link.download = "help.pdf";
+        // link.click();
+      })
     }
     else {
       const postData = {

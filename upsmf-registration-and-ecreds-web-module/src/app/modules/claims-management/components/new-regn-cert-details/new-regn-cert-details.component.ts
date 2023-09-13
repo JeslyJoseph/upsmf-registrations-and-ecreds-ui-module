@@ -13,6 +13,8 @@ import { applabels } from '../../../../messages/labels';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'
 import * as QRCode from 'qrcode';
+import { saveAs } from 'file-saver';
+
 
 
 @Component({
@@ -21,7 +23,7 @@ import * as QRCode from 'qrcode';
   styleUrls: ['./new-regn-cert-details.component.scss']
 })
 export class NewRegnCertDetailsComponent {
-
+  blob: Blob | null = null;
   labels = applabels;
   links = ['Candidate Details', 'Course Details', 'Payment Details']
 
@@ -60,6 +62,10 @@ export class NewRegnCertDetailsComponent {
 
   osid: string;
   entity: string;
+  entityId:string;
+  attestationName:string;
+  attestationId:string;
+
 
   months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -116,6 +122,8 @@ export class NewRegnCertDetailsComponent {
     this.credTypeList = credentialsType
     this.stateData = this.router?.getCurrentNavigation()?.extras.state;
     this.stateData = this.stateData?.body
+    console.log("stateData",this.stateData)
+    
 
 
   }
@@ -406,7 +414,7 @@ export class NewRegnCertDetailsComponent {
     }
     else {
 
-      if (this.stateData?.origin === "StudentOutsideUP") {
+      if (this.entity === "StudentOutsideUP") {
         this.endPointUrl = this.configService.urlConFig.URLS.STUDENT.GET_STUDENT_DETAILS_OUTSIDE_UP
         // switch (this.stateData?.origin) {
 
@@ -439,6 +447,7 @@ export class NewRegnCertDetailsComponent {
           (response: any) => {
             if (response.responseData.length) {
               this.candidateDetailList = response.responseData
+              console.log(this.candidateDetailList)
               this.osid = this.candidateDetailList[0].osid;
               this.urlDataResponse = this.candidateDetailList[0].docproof;
 
@@ -495,7 +504,8 @@ export class NewRegnCertDetailsComponent {
                 joinDate: this.candidateDetailList[0]?.joiningYear + "-" + month + "-01",
                 rollNum: this.candidateDetailList[0]?.finalYearRollNo,
                 passDate: this.candidateDetailList[0]?.passingYear + "-" + month + "-01",
-                requestType: this.candidateDetailList[0]?.requestType
+                requestType: this.candidateDetailList[0]?.requestType,
+                university:this.candidateDetailList[0]?.university
               });
 
             }
@@ -518,7 +528,7 @@ export class NewRegnCertDetailsComponent {
   onNewRegCourseDetailsformSubmit(value: any) {
     this.submitted = true;
     const osid = this.stateData?.id
-    if (this.entity === "StudentFromUP") {
+    if (this.entity === "StudentFromUP"&& this.userEmail === "Regulator") {
       const approveBody = {
         action: "GRANT_CLAIM",
         note: "Registration Certificate"
@@ -586,8 +596,12 @@ export class NewRegnCertDetailsComponent {
 
 
     }
+    else if (this.stateData.status ){
+      this.paymentDetails = true;
+    }
+    
     else {
-      if (this.newRegCourseDetailsformGroup.valid) {
+      if  (!this.stateData.status && this.newRegCourseDetailsformGroup.valid ) {
 
         const joinDate = new Date(this.newRegCourseDetailsformGroup.get('joinDate')?.value);
 
@@ -862,11 +876,46 @@ export class NewRegnCertDetailsComponent {
         return 'rejected';
       default:
         return '';
+
+    }
+  }
+  getPaymentStatusColorClass(status: string): string {
+    switch (status) {
+      case 'INPROGRESS':
+        return 'open';
+      case 'SUCCESS':
+        return 'closed';
+      default:
+        return '';
     }
   }
 
   handlePayment() {
-    const postData = {
+    if(this.stateData.status ==='APPROVED'){
+      this.entity= this.stateData.entity;
+      this.entityId=this.stateData.entityId;
+      this.attestationName=this.stateData.attestationName;
+      this.attestationId=this.stateData.attestationId
+      this.baseService.getCredentials$(this.entity,this.entityId,this.attestationName,this.attestationId)
+      .subscribe((response: any)=>{
+        console.log(response)
+        var blob = new Blob([response], { type: 'application/pdf' });
+                  saveAs(blob, 'report.pdf');
+          //     },
+          //     e => { throwError(e); }
+          // );
+        // this.blob = new Blob([response], {type: 'application/pdf'});
+
+        // var downloadURL = window.URL.createObjectURL(response);
+        // var link = document.createElement('a');
+        // link.href = downloadURL;
+        // link.download = "help.pdf";
+        // link.click();
+      })
+    }
+      
+    else{
+      const postData = {
       endpoint: "https://eazypayuat.icicibank.com/EazyPG",
       returnUrl: "https://payment.uphrh.in/api/v1/user/payment",
       paymode: "9",
@@ -895,13 +944,14 @@ export class NewRegnCertDetailsComponent {
       optionalFields: "registration",
 
     };
+    
     this.http.getPaymentUrl(postData).subscribe((data) => {
       if (data) {
         window.open(data?.redirectUrl, '_blank')
 
       }
-    }
-    )
+    })
+  }
   }
   generatePDF(qrCodeString: string) {
     const doc = new jsPDF()
@@ -953,4 +1003,15 @@ export class NewRegnCertDetailsComponent {
     doc.save(`Certificate_${this.newRegCourseDetailsformGroup.controls['rollNum'].value}_.pdf`)
 
   }
+  // downloadPDF(): any {
+  //   var mediaType = 'application/pdf';
+  //   this.http.get('api/v2/StudentFromUP/1-a2132196-bc16-4c1d-863d-1f4fa64e085a/attestation/studentVerification/1-cd6654bd-79f0-4d94-beb0-6847843f9e2f',
+  //    ).subscribe(
+  //       (response) => {
+  //           var blob = new Blob([response], { type: mediaType });
+  //           saveAs(blob, 'report.pdf');
+  //       },
+  //       e => { throwError(e); }
+  //   );
+  // }
 }

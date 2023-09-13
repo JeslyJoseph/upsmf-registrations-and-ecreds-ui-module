@@ -29,11 +29,14 @@
                         <div class="input-container" style="margin-top:6%;">
                             <button class="text-class action-btns" [disabled]="!loginForm.valid" type="submit" mat-raised-button color="primary">SIGN IN</button>
                         </div>
-                        
+                        <div class="mt2  align-center">OR</div>
+                        <div class="input-container" style="margin-top:2%;">
+                            <button class="text-class action-btns" (click)="navigateToSignupPage()" type="submit" mat-raised-button color="primary">SIGN UP</button>
+                        </div>
                         
                     </form>
-                    <div class="mt2">OR</div>
-                        <h5 class="hint-msg" (click)="navigateToSignupPage()">Sign Up</h5>
+                    <!-- <div class="mt2">OR</div>
+                        <h5 class="hint-msg" (click)="navigateToSignupPage()">Sign Up</h5> -->
                 </div>
             </div>
             
