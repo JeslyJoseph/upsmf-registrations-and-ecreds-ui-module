@@ -48,6 +48,8 @@ export class AdminRegnCertificateDetailsComponent {
   urlList: any;
   updatedUrlList: any;
   urlDataResponse: string;
+  entityId: string;
+  entityName: string;
   docsResponseUrl: string;
   convertUrlList: string;
   getMakeClaimbody: any;
@@ -143,7 +145,7 @@ export class AdminRegnCertificateDetailsComponent {
   }
 
   getEndPoint() {
-    switch (this.stateData?.origin) {
+    switch (this.stateData?.origin || this.stateData?.entity) {
 
       case 'StudentOutsideUP':
         this.endPointUrl = this.configService.urlConFig.URLS.STUDENT.GET_STUDENT_DETAILS_OUTSIDE_UP
@@ -337,6 +339,9 @@ export class AdminRegnCertificateDetailsComponent {
           (response: any) => {
             this.osid = response.responseData.osid;
             this.urlDataResponse = response.responseData.docproof;
+            this.entityId=response.responseData.studentVerification[0].entityId
+            this.entityName=response.responseData.studentVerification[0].entityName
+            console.log("entity",this.entityName)
             if (!!this.urlDataResponse) {
               this.urlData = this.urlDataResponse?.split(",").filter(url => url.trim() !== "");
               if (this.urlData.length) {
@@ -571,6 +576,8 @@ export class AdminRegnCertificateDetailsComponent {
           //convert to string with commaa separated
           this.convertUrlList = this.listOfFiles.join(',')
           const mailBody = {
+            entityId:this.entityId,
+            entityName:this.entityName,
             outsideEntityMailId: result.reason,
             name: this.newRegCertDetailsformGroup.value.applicantName,
             gender: this.newRegCertDetailsformGroup.value.gender,
@@ -936,8 +943,8 @@ export class AdminRegnCertificateDetailsComponent {
         [this.labels.dob, this.newRegCertDetailsformGroup.controls['dob'].value],
         [this.labels.credType, this.newRegCertDetailsformGroup.controls['credType'].value],
         [this.labels.gender, this.newRegCertDetailsformGroup.controls['gender'].value],
-        [this.labels.al2, this.newRegCertDetailsformGroup.controls['al2'].value],
-        [this.labels.al2, this.newRegCertDetailsformGroup.controls['al2'].value],
+        ["Address", this.newRegCertDetailsformGroup.controls['al2'].value],
+        // [this.labels.al2, this.newRegCertDetailsformGroup.controls['al2'].value],
         [this.labels.district, this.newRegCertDetailsformGroup.controls['district'].value],
         [this.labels.state, this.newRegCertDetailsformGroup.controls['state'].value],
         [this.labels.pin, this.newRegCertDetailsformGroup.controls['pin'].value],
@@ -950,7 +957,7 @@ export class AdminRegnCertificateDetailsComponent {
         [this.labels.university, this.newRegCourseDetailsformGroup.controls['university'].value],
         [this.labels.examBody, this.newRegCourseDetailsformGroup.controls['examBody'].value],
         [this.labels.rollNum, this.newRegCourseDetailsformGroup.controls['rollNum'].value],
-        [this.labels.diplomaNumber, this.newRegCourseDetailsformGroup.controls['diplomaNumber'].value],
+        // [this.labels.diplomaNumber, this.newRegCourseDetailsformGroup.controls['diplomaNumber'].value],
         [this.labels.joinDate, this.newRegCourseDetailsformGroup.controls['joinDate'].value],
         [this.labels.passDate, this.newRegCourseDetailsformGroup.controls['passDate'].value],
 

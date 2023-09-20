@@ -65,11 +65,27 @@ export class GoodStandingForeignVerificationComponent {
   paymentResponse: any;
 
   profQualificationArray = ['ANM', 'Midwife', 'HW', 'Nurse', 'Bsc Nursing'];
+  months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+ 
+  monthMap: { [key: string]: string } = {
+    "January": "01",
+    "February": "02",
+    "March": "03",
+    "April": "04",
+    "May": "05",
+    "June": "06",
+    "July": "07",
+    "August": "08",
+    "September": "09",
+  }
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Claim Registration Certificate', url: '/claims/new' },
     { label: 'Claim Details', url: '/claims/good-stand-frgn-cert' },
-    
+
   ];
 
   activity: Observable<any>;
@@ -166,7 +182,6 @@ export class GoodStandingForeignVerificationComponent {
             console.log("det", this.candidateDetailList[0])
             this.osid = this.candidateDetailList[0].osid;
             this.urlDataResponse = this.candidateDetailList[0].docproof;
-            console.log("hh", this.candidateDetailList[0].docproof)
             if (!!this.urlDataResponse) {
               this.urlData = this.urlDataResponse?.split(",").filter(url => url.trim() !== "");
               console.log('urlDaaaa', this.urlData)
@@ -184,6 +199,10 @@ export class GoodStandingForeignVerificationComponent {
                 });
               }
             }
+            const joinM = this.candidateDetailList[0].joiningMonth;
+            const jm = this.monthMap[joinM]
+            const passM = this.candidateDetailList[0].passingMonth;
+            const pm = this.monthMap[passM]
 
             this.goodStandingForeignVerificationformGroup.patchValue({
               maidenName: this.candidateDetailList[0]?.name,
@@ -206,6 +225,9 @@ export class GoodStandingForeignVerificationComponent {
               placeOfWork: this.candidateDetailList[0]?.workPlace,
               tcName: this.candidateDetailList[0]?.trainingCenter,
               proQual: this.candidateDetailList[0]?.professionalQualification,
+              joinDate: this.candidateDetailList[0].joiningYear + "-" + jm + "-01",
+              passDate: this.candidateDetailList[0].passingYear + "-" + pm + "-01",
+              // docproof:this.candidateDetailList[0]?.docproof
               // docproof:this.candidateDetailList[0]?.docproof
 
 
@@ -247,7 +269,7 @@ export class GoodStandingForeignVerificationComponent {
                 });
               }
             }
-            console.log(".....", candidateDetailList.name)
+            
             this.goodStandingForeignVerificationformGroup.patchValue({
               maidenName: candidateDetailList.name,
               mrdName: candidateDetailList.marriedName,
@@ -267,7 +289,9 @@ export class GoodStandingForeignVerificationComponent {
               placeOfWork: candidateDetailList.workPlace,
               tcName: candidateDetailList.trainingCenter,
               regnNum: candidateDetailList.registrationNumber,
-              proQual: candidateDetailList.professionalQualification
+              proQual: candidateDetailList.professionalQualification,
+              
+
 
             });
           });
@@ -301,6 +325,16 @@ export class GoodStandingForeignVerificationComponent {
                 });
               }
             }
+            const month = (new Date(Date.parse(this.candidateDetailList[0]?.joiningMonth + " 1, 2012")).getMonth() + 1 < 10) ?
+              "0" + (new Date(Date.parse(this.candidateDetailList[0]?.joiningMonth + " 1, 2012")).getMonth() + 1) :
+              new Date(Date.parse(this.candidateDetailList[0]?.joiningMonth + " 1, 2012")).getMonth() + 1
+
+
+            const joinM = this.candidateDetailList[0].joiningMonth;
+            const jm = this.monthMap[joinM]
+            const passM = this.candidateDetailList[0].passingMonth;
+            const pm = this.monthMap[passM]
+
 
             this.goodStandingForeignVerificationformGroup.patchValue({
               maidenName: this.candidateDetailList[0]?.name,
@@ -322,7 +356,9 @@ export class GoodStandingForeignVerificationComponent {
               regnNum: this.candidateDetailList[0]?.registrationNumber,
               placeOfWork: this.candidateDetailList[0]?.workPlace,
               tcName: this.candidateDetailList[0]?.trainingCenter,
-              proQual: this.candidateDetailList[0]?.professionalQualification
+              proQual: this.candidateDetailList[0]?.professionalQualification,
+              joinDate: this.candidateDetailList[0].joiningYear + "-" + jm + "-01",
+              passDate: this.candidateDetailList[0].passingYear + "-" + pm + "-01",
               // docproof:this.candidateDetailList[0]?.docproof
 
 
@@ -344,7 +380,7 @@ export class GoodStandingForeignVerificationComponent {
       fatherName: new FormControl('', [
         Validators.required]),
       dob: new FormControl('', [
-        Validators.required,this.validateMinAge(15) as ValidatorFn]),
+        Validators.required, this.validateMinAge(15) as ValidatorFn]),
       al1: new FormControl('', [
         Validators.required]),
       al2: new FormControl('', [
@@ -362,6 +398,10 @@ export class GoodStandingForeignVerificationComponent {
       proQual: new FormControl('', [
         Validators.required]),
       regnNum: new FormControl('', [
+        Validators.required]),
+      joinDate: new FormControl('', [
+        Validators.required]),
+      passDate: new FormControl('', [
         Validators.required]),
       tcName: new FormControl('', [
         Validators.required]),
@@ -576,6 +616,7 @@ export class GoodStandingForeignVerificationComponent {
           //convert to string with commaa separated
           this.convertUrlList = this.listOfFiles.join(',')
           const mailBody = {
+          
             outsideEntityMailId: result.reason,
             name: this.goodStandingForeignVerificationformGroup.value.applicantName,
             gender: this.goodStandingForeignVerificationformGroup.value.gender,
@@ -682,6 +723,18 @@ export class GoodStandingForeignVerificationComponent {
     }
 
     else if ((this.stateData.body.type === 'goodStandingCert' && !this.stateData.body.status)) {
+      const joinDate = new Date(this.goodStandingForeignVerificationformGroup.get('joinDate')?.value);
+
+        const passDate = new Date(this.goodStandingForeignVerificationformGroup.get('passDate')?.value);
+        const jMonth = joinDate.getMonth();
+        const pMonth = passDate.getMonth();
+        const joinYear = joinDate.getFullYear();
+        const passYear = joinDate.getFullYear();
+
+        const joinMonth = this.months[jMonth];
+        const passMonth = this.months[pMonth];
+        console.log("joinmonth",joinMonth)
+
       this.urlList = this.updatedUrlList ? this.updatedUrlList : [...this.docsUrl, ...this.urlData]
       //convert to string with commaa separated
       this.convertUrlList = this.urlList.join(',')
@@ -698,7 +751,7 @@ export class GoodStandingForeignVerificationComponent {
         "date": this.datePipe.transform(new Date(), "yyyy-MM-dd")?.toString(),
         "refNo": "REF789012",
         "validityOfRegistration": "2023-12-31",
-        "dob": "1990-05-15",
+        "dob": this.datePipe.transform(this.goodStandingForeignVerificationformGroup.value.dob, "yyyy-MM-dd")?.toString(),
         "docproof": this.convertUrlList,
         "candidatePic": "pic1.jpg",
         "marriedName": this.goodStandingForeignVerificationformGroup.value.mrdName,
@@ -710,7 +763,11 @@ export class GoodStandingForeignVerificationComponent {
         "state": this.goodStandingForeignVerificationformGroup.value.state,
         "country": this.goodStandingForeignVerificationformGroup.value.country,
         "pincode": this.goodStandingForeignVerificationformGroup.value.pin,
-        "district": this.goodStandingForeignVerificationformGroup.value.district
+        "district": this.goodStandingForeignVerificationformGroup.value.district,
+        "joiningMonth": joinMonth,
+        "passingMonth": passMonth,
+        "joiningYear": joinYear.toString(),
+        "passingYear": passYear.toString(),
 
 
 
@@ -764,6 +821,17 @@ export class GoodStandingForeignVerificationComponent {
 
     else {
       if (this.candidateDetailList[0]?.paymentStatus !== 'SUCCESS') {
+        const joinDate = new Date(this.goodStandingForeignVerificationformGroup.get('joinDate')?.value);
+
+        const passDate = new Date(this.goodStandingForeignVerificationformGroup.get('passDate')?.value);
+        const jMonth = joinDate.getMonth();
+        const pMonth = passDate.getMonth();
+        const joinYear = joinDate.getFullYear();
+        const passYear = joinDate.getFullYear();
+
+        const joinMonth = this.months[jMonth];
+        const passMonth = this.months[pMonth];
+        console.log("joinmonth",joinMonth)
         this.urlList = this.updatedUrlList ? this.updatedUrlList : [...this.docsUrl, ...this.urlData]
         //convert to string with commaa separated
         this.convertUrlList = this.urlList.join(',')
@@ -780,7 +848,7 @@ export class GoodStandingForeignVerificationComponent {
           "date": this.datePipe.transform(new Date(), "yyyy-MM-dd")?.toString(),
           "refNo": "REF789012",
           "validityOfRegistration": "2023-12-31",
-          "dob": "1990-05-15",
+          "dob": this.datePipe.transform(this.goodStandingForeignVerificationformGroup.value.dob, "yyyy-MM-dd")?.toString(),
           "docproof": this.convertUrlList,
           "candidatePic": "pic1.jpg",
           "marriedName": this.goodStandingForeignVerificationformGroup.value.mrdName,
@@ -792,8 +860,11 @@ export class GoodStandingForeignVerificationComponent {
           "state": this.goodStandingForeignVerificationformGroup.value.state,
           "country": this.goodStandingForeignVerificationformGroup.value.country,
           "pincode": this.goodStandingForeignVerificationformGroup.value.pin,
-          "district": this.goodStandingForeignVerificationformGroup.value.district
-
+          "district": this.goodStandingForeignVerificationformGroup.value.district,
+          "joiningMonth": joinMonth,
+          "passingMonth": passMonth,
+          "joiningYear": joinYear.toString(),
+          "passingYear": passYear.toString(),
         }
         console.log("foreign body", updateStudentForeignVerificationBody)
         if (this.osid) {
@@ -890,16 +961,16 @@ export class GoodStandingForeignVerificationComponent {
     return;
   }
   handlePayment() {
-    if(this.stateData.body.status ==='APPROVED'){
-      this.entity= this.stateData.entity;
-      this.entityId=this.stateData.entityId;
-      this.attestationName=this.stateData.attestationName;
-      this.attestationId=this.stateData.attestationId
-      this.baseService.getCredentials$(this.entity,this.entityId,this.attestationName,this.attestationId)
-      .subscribe((response: any)=>{
-        const fileName = "Certificate.pdf";
-        saveAs(response.responseData, fileName);
-      })
+    if (this.stateData.body.status === 'APPROVED') {
+      this.entity = this.stateData.entity;
+      this.entityId = this.stateData.entityId;
+      this.attestationName = this.stateData.attestationName;
+      this.attestationId = this.stateData.attestationId
+      this.baseService.getCredentials$(this.entity, this.entityId, this.attestationName, this.attestationId)
+        .subscribe((response: any) => {
+          const fileName = "Certificate.pdf";
+          saveAs(response.responseData, fileName);
+        })
     }
     else {
       const postData = {

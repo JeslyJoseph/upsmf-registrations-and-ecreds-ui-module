@@ -348,7 +348,7 @@
                                             <mat-form-field appearance="outline">
 
                                                 <mat-label>Choose a date</mat-label>
-                                                <input matInput [matDatepicker]="pickerjoindate" formControlName="joinDate" (click)="onDateChange($event)">
+                                                <input matInput [matDatepicker]="pickerjoindate" formControlName="joinDate" (click)="onDateChange($event)" [max]="maxDate">
                                                 <mat-datepicker-toggle matIconSuffix [for]="pickerjoindate"></mat-datepicker-toggle>
                                                 <mat-datepicker #pickerjoindate></mat-datepicker>
                                             </mat-form-field>
@@ -359,7 +359,7 @@
                                             <h4>{{labels.passDate}}</h4>
                                             <mat-form-field appearance="outline">
                                                 <mat-label>Choose a date</mat-label>
-                                                <input matInput [matDatepicker]="pickerpassingDate" formControlName="passDate" [min]="newRegCourseDetailsformGroup.controls['joinDate'].value">
+                                                <input matInput [matDatepicker]="pickerpassingDate" formControlName="passDate" [min]="newRegCourseDetailsformGroup.controls['joinDate'].value" [max]="maxDate">
                                                 <mat-datepicker-toggle matIconSuffix [for]="pickerpassingDate"></mat-datepicker-toggle>
                                                 <mat-datepicker #pickerpassingDate></mat-datepicker>
                                                 

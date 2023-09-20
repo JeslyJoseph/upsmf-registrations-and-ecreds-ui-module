@@ -46,6 +46,9 @@ export class AdminGoodStandingForeignVerificationComponent {
   userRole: any;
   userEmail: any;
   urlDataResponse: string;
+
+  entityId: string;
+  entityName: string;
   entity: string;
   osid: string;
   stateData: any;
@@ -103,13 +106,16 @@ export class AdminGoodStandingForeignVerificationComponent {
     console.log("getting getCandidatePersonalDetails")
     this.osid = this.stateData.body.entityId
     this.entity = this.stateData.body.entity
-    console.log("entity", this.entity)
     if (this.entity === "StudentGoodstanding" && this.userEmail === "Regulator") {
       this.baseService.getCandidatePersonalDetailsRegulator$(this.entity,this.osid)
         .subscribe(
           (response: any) => {
             console.log("data", response)
             this.urlDataResponse = response.responseData.docproof;
+            this.entityId=response.responseData.studentGoodstandingVerification[0].entityId
+            this.entityName=response.responseData.studentGoodstandingVerification[0].entityName
+            console.log("entity", this.entityName)
+
             if (!!this.urlDataResponse) {
               this.urlData = this.urlDataResponse?.split(",").filter(url => url.trim() !== "");
               console.log('urlDaaaa', this.urlData)
@@ -138,7 +144,7 @@ export class AdminGoodStandingForeignVerificationComponent {
               dob: response.responseData.dob,
               gender: response.responseData.gender,
               al1: response.responseData.presentAddress,
-              al2: response.responseData.presentAddress,
+              // al2: response.responseData.presentAddress,
               state: response.responseData.state,
               pin: response.responseData.pincode,
               district: response.responseData.district,
@@ -163,6 +169,8 @@ export class AdminGoodStandingForeignVerificationComponent {
         .subscribe(
           (response: any) => {
             this.urlDataResponse = response.responseData.docproof;
+            this.entityId=response.responseData.StudentForeignVerify[0].entityId
+            this.entityName=response.responseData.StudentForeignVerify[0].entityName
             if (!!this.urlDataResponse) {
               this.urlData = this.urlDataResponse?.split(",").filter(url => url.trim() !== "");
               console.log('urlDaaaa', this.urlData)
@@ -191,7 +199,7 @@ export class AdminGoodStandingForeignVerificationComponent {
               dob: response.responseData.dob,
               gender: response.responseData.gender,
               al1: response.responseData.address,
-              al2: response.responseData.address,
+              // al2: response.responseData.address,
               state: response.responseData.state,
               pin: response.responseData.pincode,
               district: response.responseData.district,
@@ -303,9 +311,12 @@ export class AdminGoodStandingForeignVerificationComponent {
 
         }
         const details = JSON.parse(this.stateData.body.propertyData);
+        console.log("det",details)
         //convert to string with commaa separated
         this.convertUrlList = this.listOfFiles.join(',')
         const mailBody = {
+          entityId:this.entityId,
+          entityName:this.entityName,
           outsideEntityMailId: result.reason,
           name: this.goodStandingForeignVerificationformGroup.value.maidenName,
           gender: "NA",
@@ -324,7 +335,7 @@ export class AdminGoodStandingForeignVerificationComponent {
 
         }
         this.baseService.sendMailOutsideUp$(mailBody).subscribe((response) => {
-          
+          this.navToPreviousPage();
         })
 
       }
@@ -357,8 +368,8 @@ export class AdminGoodStandingForeignVerificationComponent {
         [this.labels.mrdName, this.goodStandingForeignVerificationformGroup.controls['mrdName'].value],
         [this.labels.fatherName, this.goodStandingForeignVerificationformGroup.controls['fatherName'].value],
         [this.labels.dob, this.goodStandingForeignVerificationformGroup.controls['dob'].value],
-        [this.labels.al1, this.goodStandingForeignVerificationformGroup.controls['al1'].value],
-        [this.labels.al2, this.goodStandingForeignVerificationformGroup.controls['al2'].value],
+        ["Address", this.goodStandingForeignVerificationformGroup.controls['al1'].value],
+        // [this.labels.al2, this.goodStandingForeignVerificationformGroup.controls['al2'].value],
         [this.labels.district, this.goodStandingForeignVerificationformGroup.controls['district'].value],
         [this.labels.state, this.goodStandingForeignVerificationformGroup.controls['state'].value],
         [this.labels.pin, this.goodStandingForeignVerificationformGroup.controls['pin'].value],

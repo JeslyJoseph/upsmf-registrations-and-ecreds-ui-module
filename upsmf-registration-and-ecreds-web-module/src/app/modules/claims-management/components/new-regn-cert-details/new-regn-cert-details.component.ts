@@ -95,6 +95,8 @@ export class NewRegnCertDetailsComponent {
   courseUrl: string = ''
   paymentResponse: any;
   updateStudentBody: any;
+  todayDate=new Date();
+  maxDate=this.todayDate;
 
 
   stateData: any;
@@ -132,6 +134,7 @@ export class NewRegnCertDetailsComponent {
 
   ngOnInit() {
     this.initForm();
+    this.todayDate = new Date();
 
     this.route.queryParams.subscribe((param) => {
       if (param['resData']) {
@@ -149,7 +152,7 @@ export class NewRegnCertDetailsComponent {
   }
 
   getEndPoint() {
-    switch (this.stateData?.origin) {
+    switch (this.stateData?.origin  || this.stateData?.entity) {
 
       case 'StudentOutsideUP':
         this.endPointUrl = this.configService.urlConFig.URLS.STUDENT.GET_STUDENT_DETAILS_OUTSIDE_UP
@@ -177,6 +180,7 @@ export class NewRegnCertDetailsComponent {
   stateTypeSelected(e: Event) {
   }
 
+
   credTypeSelected(e: Event) {
 
   }
@@ -198,7 +202,7 @@ export class NewRegnCertDetailsComponent {
         Validators.required]),
       district: new FormControl('', [
         Validators.required]),
-      state: new FormControl('UP', [
+      state: new FormControl('', [
         Validators.required]),
       pin: new FormControl('', [
         Validators.required, Validators.minLength(6),
@@ -324,7 +328,7 @@ export class NewRegnCertDetailsComponent {
             const joinM = candidateDetailList.joiningMonth;
             const jm = this.monthMap[joinM]
             const passM = candidateDetailList.passingMonth;
-            const pm = this.monthMap[joinM]
+            const pm = this.monthMap[passM]
 
             this.newRegCourseDetailsformGroup.patchValue({
               courseName: candidateDetailList.courseName,
@@ -599,7 +603,6 @@ export class NewRegnCertDetailsComponent {
             courseCouncil: "BBB",
             state: this.newRegCertDetailsformGroup.value.state,
             country: this.newRegCertDetailsformGroup.value.country,
-            // state: this.newRegCertDetailsformGroup.value.state,
             attachment: result.file,
 
           }
@@ -678,7 +681,8 @@ export class NewRegnCertDetailsComponent {
           "university": value.university,
           "candidateSignature": "NA",
           "validityUpto": "NA",
-          "certificateNumber": "NA"
+          "certificateNumber": "NA",
+          "diplomaNumber":this.stateData?.regNo ? this.stateData?.regNo : "NA"
 
         }
 
